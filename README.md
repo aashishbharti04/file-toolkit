@@ -1,51 +1,70 @@
 <div align="center">
 
-# 🗜️ Image Compressor
+# 🧰 FileToolkit
 
-### Compress, resize & convert images — 100% in your browser. Private, fast, free.
+### Free PDF &amp; image tools — merge, split, compress, resize &amp; convert. 100% in your browser.
 
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![No Upload](https://img.shields.io/badge/100%25-Client--side-4ade80?style=for-the-badge)
+![Private](https://img.shields.io/badge/100%25-Private%20%C2%B7%20No%20Upload-4ade80?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-⭐ **If this saves you time, drop a star!**
+**An open-source, iLovePDF-style toolkit that runs entirely on your device — your files are never uploaded.**
+
+🔗 **[Live Demo](https://aashishbharti04.github.io/file-toolkit/)** · ⭐ **Star it if it's useful!**
 
 </div>
 
 ---
 
-## ❓ The problem it solves
-Images from phones and cameras are **huge** — they slow down websites, fill up storage, and get rejected by upload limits. Most "compress image" sites make you **upload your private photos to their servers**. 😬
+## ❓ Why FileToolkit?
+Most online PDF/image tools make you **upload your private files to their servers**. FileToolkit does everything **locally in your browser** using the Canvas, File, and PDF APIs — so it's **private, instant, and works offline** (after first load).
 
-**Image Compressor does it all locally in your browser** — your images never leave your device.
+## 🧰 Tools included
+### 📄 PDF
+| Tool | What it does |
+|---|---|
+| 🔗 **Merge PDF** | Combine multiple PDFs into one |
+| ✂️ **Split PDF** | Extract a page range into a new PDF |
+| 🖼️ **Image → PDF** | Turn JPG/PNG/WebP images into a PDF |
+| 📸 **PDF → JPG** | Render every PDF page to a JPG image |
 
-## ✨ Features
-- 🗜️ **Compress** with an adjustable quality slider
-- 📐 **Resize** by setting a max width
-- 🔄 **Convert** between **JPG · WebP · PNG**
-- 📦 **Batch** — drop many images at once
-- 📊 See **before → after size** and **% saved** per image
-- ⬇️ Download one or **download all**
-- 🔒 **100% private** — pure client-side, nothing is uploaded
-- ⚡ **Zero dependencies** — just HTML, CSS & JS
+### 🖼️ Image
+| Tool | What it does |
+|---|---|
+| 🗜️ **Compress Image** | Shrink file size with a quality slider |
+| 📐 **Resize Image** | Set an exact width (keeps proportions) |
+| 🔄 **Convert Image** | Convert between JPG, PNG &amp; WebP |
 
-## 🚀 Usage
-Open `index.html` in any browser, or use the live version on GitHub Pages.
-1. Drag & drop (or choose) your images
-2. Tweak quality / max width / format
-3. Download the optimized results
+## ✨ Highlights
+- 🔒 **100% client-side** — nothing leaves your device
+- 📦 **Batch** processing &amp; drag-and-drop everywhere
+- ⚡ Fast, responsive, clean UI
+- 🆓 Free &amp; open source
 
-## 🛠️ How it works
-Uses the browser's **Canvas API** to redraw each image at the target size, then
-`canvas.toBlob()` re-encodes it at your chosen format and quality — all in memory,
-on your machine.
+## 🚀 Run it
+Just open `index.html` in a browser, or visit the [live demo](https://aashishbharti04.github.io/file-toolkit/).
+To host your own: fork → enable **Settings → Pages → main / root**.
+
+## 🧱 Built with
+- Vanilla **HTML / CSS / JS** (no framework)
+- [pdf-lib](https://pdf-lib.js.org/) — merge, split, create PDFs
+- [pdf.js](https://mozilla.github.io/pdf.js/) — render PDF pages to images
+- Browser **Canvas API** — image compress/resize/convert
+
+## 📁 Structure
+```
+index.html          → homepage with the tool grid
+assets/style.css    → shared styling
+assets/common.js    → shared helpers (drop, download, image utils)
+tools/*.html        → one self-contained page per tool
+```
 
 ## 🤝 Contributing
-PRs welcome! Ideas: drag-to-reorder, EXIF strip toggle, target-filesize mode, ZIP download.
+PRs welcome! Ideas: compress PDF, rotate PDF, crop image, target-filesize mode, ZIP download. See an issue you can fix? Go for it.
 
 ## 📄 License
-[MIT](LICENSE) — free for personal and commercial use.
+[MIT](LICENSE) — free for personal &amp; commercial use.
 
 ---
 

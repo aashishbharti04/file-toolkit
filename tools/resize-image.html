@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resize Image — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>📐 Resize Image</h1>
+      <p>Set an exact width — the height scales automatically to keep proportions.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop images</strong> or click to choose</p>
+      <p class="muted small">JPG, PNG, WebP · batch supported</p>
+    </div>
+    <input type="file" id="file" accept="image/*" multiple hidden />
+
+    <div id="panel" class="panel hidden">
+      <div class="row">
+        <label class="field"><span>Target width (px)</span>
+          <input type="number" id="width" value="1080" min="16" max="8000" /></label>
+        <label class="field"><span>Format</span>
+          <select id="format">
+            <option value="image/jpeg">JPEG (.jpg)</option>
+            <option value="image/png">PNG (.png)</option>
+            <option value="image/webp">WebP (.webp)</option>
+          </select></label>
+      </div>
+      <ul id="list" class="file-list"></ul>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="dlAll" class="btn primary">⬇️ Download all</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="../assets/common.js"></script>
+  <script>
+    let queue = [];
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const list = document.getElementById("list");
+    const width = document.getElementById("width");
+    const format = document.getElementById("format");
+
+    [width, format].forEach((el) => el.addEventListener("change", run));
+    document.getElementById("clear").addEventListener("click", () => { queue = []; list.innerHTML = ""; panel.classList.add("hidden"); });
+    document.getElementById("dlAll").addEventListener("click", () =>
+      document.querySelectorAll(".dl").forEach((b, i) => setTimeout(() => b.click(), i * 250)));
+
+    setupDrop({ drop, input: file, accept: (f) => f.type.startsWith("image/"),
+      onFiles: (files) => { queue.push(...[...files]); run(); } });
+
+    async function run() {
+      if (!queue.length) return;
+      panel.classList.remove("hidden");
+      list.innerHTML = "";
+      const type = format.value;
+      for (const f of queue) {
+        const img = await loadImage(f);
+        const canvas = imageToCanvas(img, Number(width.value));
+        const blob = await canvasToBlob(canvas, type, 0.92);
+        list.appendChild(item(f, blob, canvas, type));
+      }
+    }
+
+    function item(f, blob, canvas, type) {
+      const name = f.name.replace(/\.[^.]+$/, "") + `-${canvas.width}px.` + extFor(type);
+      const li = document.createElement("li");
+      li.innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="">
+        <div class="nm">${name}<div class="sz">${canvas.width}×${canvas.height} · ${formatBytes(blob.size)}</div></div>
+        <button class="btn dl">⬇️</button>`;
+      li.querySelector(".dl").addEventListener("click", () => downloadBlob(blob, name));
+      return li;
+    }
+  </script>
+</body>
+</html>

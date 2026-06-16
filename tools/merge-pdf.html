@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merge PDF — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>🔗 Merge PDF</h1>
+      <p>Combine several PDF files into one — in the order you add them.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop PDFs</strong> or click to choose</p>
+      <p class="muted small">Add 2 or more PDF files</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" multiple hidden />
+
+    <div id="panel" class="panel hidden">
+      <ul id="list" class="file-list"></ul>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">🔗 Merge PDFs</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    let queue = [];
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const list = document.getElementById("list");
+    const status = document.getElementById("status");
+
+    document.getElementById("clear").addEventListener("click", () => { queue = []; render(); panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", merge);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: (files) => { queue.push(...[...files].filter(f => f.type === "application/pdf")); panel.classList.remove("hidden"); render(); } });
+
+    function render() {
+      list.innerHTML = "";
+      queue.forEach((f, i) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<div class="nm">📄 ${i + 1}. ${f.name}<div class="sz">${formatBytes(f.size)}</div></div>
+          <button class="rm" title="Remove">✕</button>`;
+        li.querySelector(".rm").addEventListener("click", () => { queue.splice(i, 1); render(); });
+        list.appendChild(li);
+      });
+    }
+
+    async function merge() {
+      if (queue.length < 2) { status.classList.remove("hidden"); status.innerHTML = "⚠️ Add at least 2 PDFs."; return; }
+      status.classList.remove("hidden");
+      status.innerHTML = "Merging…";
+      const { PDFDocument } = PDFLib;
+      const out = await PDFDocument.create();
+      for (const f of queue) {
+        const src = await PDFDocument.load(await f.arrayBuffer());
+        const pages = await out.copyPages(src, src.getPageIndices());
+        pages.forEach((p) => out.addPage(p));
+      }
+      const bytes = await out.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(blob, "merged.pdf");
+      status.innerHTML = `✅ Merged <b>${queue.length} PDFs</b> (${out.getPageCount()} pages), ${formatBytes(blob.size)}.`;
+    }
+  </script>
+</body>
+</html>

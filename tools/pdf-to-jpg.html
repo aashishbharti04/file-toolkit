@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF to JPG — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>📸 PDF → JPG</h1>
+      <p>Turn every page of a PDF into a high-quality JPG image.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+      <p class="muted small">One PDF file</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <div class="row">
+        <label class="field"><span>Quality / scale <b id="sL">2×</b></span>
+          <input type="range" id="scale" min="1" max="3" step="0.5" value="2" /></label>
+      </div>
+      <div id="status" class="result hidden"></div>
+      <ul id="list" class="file-list"></ul>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="dlAll" class="btn primary hidden">⬇️ Download all</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+    let current = null;
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const list = document.getElementById("list");
+    const status = document.getElementById("status");
+    const scale = document.getElementById("scale");
+    const dlAll = document.getElementById("dlAll");
+
+    scale.addEventListener("input", () => sL.textContent = scale.value + "×");
+    scale.addEventListener("change", () => current && convert());
+    document.getElementById("clear").addEventListener("click", () => { current = null; list.innerHTML = ""; panel.classList.add("hidden"); status.classList.add("hidden"); dlAll.classList.add("hidden"); });
+    dlAll.addEventListener("click", () => document.querySelectorAll(".dl").forEach((b, i) => setTimeout(() => b.click(), i * 300)));
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: (files) => { current = files[0]; panel.classList.remove("hidden"); convert(); } });
+
+    async function convert() {
+      list.innerHTML = "";
+      status.classList.remove("hidden");
+      status.innerHTML = "Rendering pages…";
+      const data = new Uint8Array(await current.arrayBuffer());
+      const pdf = await pdfjsLib.getDocument({ data }).promise;
+      const s = Number(scale.value);
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const viewport = page.getViewport({ scale: s });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+        const blob = await canvasToBlob(canvas, "image/jpeg", 0.92);
+        list.appendChild(item(n, blob, canvas));
+      }
+      status.innerHTML = `✅ Converted <b>${pdf.numPages} page(s)</b> to JPG.`;
+      dlAll.classList.remove("hidden");
+    }
+
+    function item(n, blob, canvas) {
+      const name = `${current.name.replace(/\.pdf$/i, "")}-page-${n}.jpg`;
+      const li = document.createElement("li");
+      li.innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="">
+        <div class="nm">${name}<div class="sz">${canvas.width}×${canvas.height} · ${formatBytes(blob.size)}</div></div>
+        <button class="btn dl">⬇️</button>`;
+      li.querySelector(".dl").addEventListener("click", () => downloadBlob(blob, name));
+      return li;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Split PDF — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>✂️ Split PDF</h1>
+      <p>Extract a range of pages into a new PDF.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+      <p class="muted small">One PDF file</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <p id="info" class="muted" style="margin-bottom:14px;"></p>
+      <div class="row">
+        <label class="field"><span>From page</span><input type="number" id="from" value="1" min="1" /></label>
+        <label class="field"><span>To page</span><input type="number" id="to" value="1" min="1" /></label>
+      </div>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">✂️ Extract pages</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    let current = null, pageCount = 0;
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const info = document.getElementById("info");
+    const from = document.getElementById("from");
+    const to = document.getElementById("to");
+    const status = document.getElementById("status");
+
+    document.getElementById("clear").addEventListener("click", () => { current = null; panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", split);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: async (files) => {
+        current = files[0];
+        const { PDFDocument } = PDFLib;
+        const doc = await PDFDocument.load(await current.arrayBuffer());
+        pageCount = doc.getPageCount();
+        from.max = to.max = pageCount; to.value = pageCount;
+        info.textContent = `📄 ${current.name} · ${pageCount} pages`;
+        panel.classList.remove("hidden");
+      } });
+
+    async function split() {
+      if (!current) return;
+      let a = Math.max(1, Number(from.value)), b = Math.min(pageCount, Number(to.value));
+      if (a > b) { status.classList.remove("hidden"); status.innerHTML = "⚠️ 'From' must be ≤ 'To'."; return; }
+      status.classList.remove("hidden"); status.innerHTML = "Extracting…";
+      const { PDFDocument } = PDFLib;
+      const src = await PDFDocument.load(await current.arrayBuffer());
+      const out = await PDFDocument.create();
+      const indices = [];
+      for (let i = a - 1; i <= b - 1; i++) indices.push(i);
+      const pages = await out.copyPages(src, indices);
+      pages.forEach((p) => out.addPage(p));
+      const bytes = await out.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(blob, `${current.name.replace(/\.pdf$/i, "")}-pages-${a}-${b}.pdf`);
+      status.innerHTML = `✅ Extracted pages <b>${a}–${b}</b> (${indices.length} pages), ${formatBytes(blob.size)}.`;
+    }
+  </script>
+</body>
+</html>
