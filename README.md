@@ -11,6 +11,8 @@
 
 **An open-source, iLovePDF-style toolkit that runs entirely on your device — your files are never uploaded.**
 
+![FileToolkit preview](preview.svg)
+
 🔗 **[Live Demo](https://aashishbharti04.github.io/file-toolkit/)** · ⭐ **Star it if it's useful!**
 
 </div>
