@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rotate PDF — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>🔄 Rotate PDF</h1>
+      <p>Rotate all pages of your PDF clockwise.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <p id="info" class="muted" style="margin-bottom:14px;"></p>
+      <div class="row">
+        <label class="field"><span>Rotate by</span>
+          <select id="angle">
+            <option value="90">90° clockwise</option>
+            <option value="180">180°</option>
+            <option value="270">270° (90° left)</option>
+          </select></label>
+      </div>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">🔄 Rotate &amp; download</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    let current = null;
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const info = document.getElementById("info");
+    const status = document.getElementById("status");
+
+    document.getElementById("clear").addEventListener("click", () => { current = null; panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", rotate);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: (files) => { current = files[0]; info.textContent = `📄 ${current.name} · ${formatBytes(current.size)}`; panel.classList.remove("hidden"); } });
+
+    async function rotate() {
+      if (!current) return;
+      status.classList.remove("hidden"); status.innerHTML = "Rotating…";
+      const { PDFDocument, degrees } = PDFLib;
+      const doc = await PDFDocument.load(await current.arrayBuffer());
+      const add = Number(document.getElementById("angle").value);
+      doc.getPages().forEach((p) => {
+        const cur = p.getRotation().angle || 0;
+        p.setRotation(degrees((cur + add) % 360));
+      });
+      const bytes = await doc.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(blob, current.name.replace(/\.pdf$/i, "") + "-rotated.pdf");
+      status.innerHTML = `✅ Rotated <b>${doc.getPageCount()} page(s)</b> by ${add}°.`;
+    }
+  </script>
+</body>
+</html>

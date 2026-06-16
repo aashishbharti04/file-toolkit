@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compress PDF — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>🗜️ Compress PDF</h1>
+      <p>Reduce PDF file size by recompressing each page.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <p id="info" class="muted" style="margin-bottom:14px;"></p>
+      <div class="row">
+        <label class="field"><span>Quality <b id="qL">70%</b></span>
+          <input type="range" id="quality" min="30" max="90" value="70" /></label>
+        <label class="field"><span>Resolution</span>
+          <select id="scale">
+            <option value="1">Low (1×) — smallest</option>
+            <option value="1.5" selected>Medium (1.5×)</option>
+            <option value="2">High (2×)</option>
+          </select></label>
+      </div>
+      <p class="muted small">⚠️ This rasterizes pages (text becomes part of the image), so it won't be selectable. Best for scanned or image-heavy PDFs.</p>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">🗜️ Compress &amp; download</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+    let current = null;
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const info = document.getElementById("info");
+    const status = document.getElementById("status");
+    const quality = document.getElementById("quality");
+
+    quality.addEventListener("input", () => qL.textContent = quality.value + "%");
+    document.getElementById("clear").addEventListener("click", () => { current = null; panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", compress);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: (files) => { current = files[0]; info.textContent = `📄 ${current.name} · ${formatBytes(current.size)}`; panel.classList.remove("hidden"); } });
+
+    async function compress() {
+      if (!current) return;
+      status.classList.remove("hidden"); status.innerHTML = "Compressing… (this can take a moment)";
+      const data = new Uint8Array(await current.arrayBuffer());
+      const pdf = await pdfjsLib.getDocument({ data }).promise;
+      const scale = Number(document.getElementById("scale").value);
+      const q = Number(quality.value) / 100;
+      const { PDFDocument } = PDFLib;
+      const out = await PDFDocument.create();
+
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const vp1 = page.getViewport({ scale: 1 });        // points (original size)
+        const vp = page.getViewport({ scale });            // render resolution
+        const canvas = document.createElement("canvas");
+        canvas.width = vp.width; canvas.height = vp.height;
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport: vp }).promise;
+        const blob = await canvasToBlob(canvas, "image/jpeg", q);
+        const jpg = await out.embedJpg(new Uint8Array(await blob.arrayBuffer()));
+        const p = out.addPage([vp1.width, vp1.height]);
+        p.drawImage(jpg, { x: 0, y: 0, width: vp1.width, height: vp1.height });
+      }
+
+      const bytes = await out.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      const pct = Math.round((1 - blob.size / current.size) * 100);
+      downloadBlob(blob, current.name.replace(/\.pdf$/i, "") + "-compressed.pdf");
+      status.innerHTML = `✅ ${formatBytes(current.size)} → <b>${formatBytes(blob.size)}</b> · <span class="saved ${pct<0?'up':''}">${pct>=0?'saved '+pct+'%':'grew '+Math.abs(pct)+'%'}</span>`;
+    }
+  </script>
+</body>
+</html>

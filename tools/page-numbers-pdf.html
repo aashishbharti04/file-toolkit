@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Page Numbers — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>#️⃣ Add Page Numbers</h1>
+      <p>Add page numbers to the bottom of every page.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <p id="info" class="muted" style="margin-bottom:14px;"></p>
+      <div class="row">
+        <label class="field"><span>Position</span>
+          <select id="pos">
+            <option value="center">Bottom center</option>
+            <option value="right">Bottom right</option>
+            <option value="left">Bottom left</option>
+          </select></label>
+        <label class="field"><span>Style</span>
+          <select id="style">
+            <option value="n">1, 2, 3 …</option>
+            <option value="n_of_total">1 of N</option>
+            <option value="page_n">Page 1</option>
+          </select></label>
+      </div>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">#️⃣ Add numbers</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    let current = null;
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const info = document.getElementById("info");
+    const status = document.getElementById("status");
+
+    document.getElementById("clear").addEventListener("click", () => { current = null; panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", number);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: (files) => { current = files[0]; info.textContent = `📄 ${current.name} · ${formatBytes(current.size)}`; panel.classList.remove("hidden"); } });
+
+    async function number() {
+      if (!current) return;
+      status.classList.remove("hidden"); status.innerHTML = "Adding numbers…";
+      const { PDFDocument, StandardFonts, rgb } = PDFLib;
+      const doc = await PDFDocument.load(await current.arrayBuffer());
+      const font = await doc.embedFont(StandardFonts.Helvetica);
+      const pages = doc.getPages();
+      const total = pages.length;
+      const pos = document.getElementById("pos").value;
+      const style = document.getElementById("style").value;
+      const fs = 11;
+      pages.forEach((p, i) => {
+        const n = i + 1;
+        let label = style === "n_of_total" ? `${n} of ${total}` : style === "page_n" ? `Page ${n}` : `${n}`;
+        const { width } = p.getSize();
+        const tw = font.widthOfTextAtSize(label, fs);
+        let x = width / 2 - tw / 2;
+        if (pos === "right") x = width - tw - 40;
+        if (pos === "left") x = 40;
+        p.drawText(label, { x, y: 24, size: fs, font, color: rgb(0.25, 0.25, 0.25) });
+      });
+      const bytes = await doc.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(blob, current.name.replace(/\.pdf$/i, "") + "-numbered.pdf");
+      status.innerHTML = `✅ Numbered <b>${total} page(s)</b>.`;
+    }
+  </script>
+</body>
+</html>

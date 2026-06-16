@@ -28,6 +28,11 @@ Most online PDF/image tools make you **upload your private files to their server
 |---|---|
 | 🔗 **Merge PDF** | Combine multiple PDFs into one |
 | ✂️ **Split PDF** | Extract a page range into a new PDF |
+| 🗜️ **Compress PDF** | Shrink size by recompressing pages |
+| 🔄 **Rotate PDF** | Rotate all pages 90°/180°/270° |
+| 🗂️ **Organize PDF** | Reorder or delete pages |
+| 💧 **Watermark** | Stamp text diagonally on every page |
+| #️⃣ **Page Numbers** | Add page numbers in any corner |
 | 🖼️ **Image → PDF** | Turn JPG/PNG/WebP images into a PDF |
 | 📸 **PDF → JPG** | Render every PDF page to a JPG image |
 

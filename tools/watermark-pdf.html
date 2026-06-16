@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watermark PDF — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>💧 Watermark PDF</h1>
+      <p>Stamp text diagonally across every page.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <p id="info" class="muted" style="margin-bottom:14px;"></p>
+      <div class="row">
+        <label class="field"><span>Watermark text</span><input type="text" id="text" value="CONFIDENTIAL" /></label>
+        <label class="field"><span>Font size <b id="szL">48</b></span><input type="range" id="size" min="20" max="120" value="48" /></label>
+      </div>
+      <div class="row">
+        <label class="field"><span>Opacity <b id="opL">20%</b></span><input type="range" id="opacity" min="5" max="80" value="20" /></label>
+        <label class="field"><span>Color</span>
+          <select id="color">
+            <option value="gray">Gray</option><option value="red">Red</option><option value="blue">Blue</option>
+          </select></label>
+      </div>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">💧 Add watermark</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    let current = null;
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const info = document.getElementById("info");
+    const status = document.getElementById("status");
+    const size = document.getElementById("size");
+    const opacity = document.getElementById("opacity");
+
+    size.addEventListener("input", () => szL.textContent = size.value);
+    opacity.addEventListener("input", () => opL.textContent = opacity.value + "%");
+    document.getElementById("clear").addEventListener("click", () => { current = null; panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", stamp);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: (files) => { current = files[0]; info.textContent = `📄 ${current.name} · ${formatBytes(current.size)}`; panel.classList.remove("hidden"); } });
+
+    const COLORS = { gray: [0.5,0.5,0.5], red: [0.85,0.15,0.15], blue: [0.15,0.3,0.8] };
+
+    async function stamp() {
+      if (!current) return;
+      const txt = document.getElementById("text").value || "CONFIDENTIAL";
+      status.classList.remove("hidden"); status.innerHTML = "Stamping…";
+      const { PDFDocument, StandardFonts, degrees, rgb } = PDFLib;
+      const doc = await PDFDocument.load(await current.arrayBuffer());
+      const font = await doc.embedFont(StandardFonts.HelveticaBold);
+      const fs = Number(size.value);
+      const [r, g, b] = COLORS[document.getElementById("color").value];
+      const op = Number(opacity.value) / 100;
+      doc.getPages().forEach((p) => {
+        const { width, height } = p.getSize();
+        const tw = font.widthOfTextAtSize(txt, fs);
+        p.drawText(txt, {
+          x: width / 2 - tw / 2,
+          y: height / 2,
+          size: fs, font, color: rgb(r, g, b), opacity: op,
+          rotate: degrees(45),
+        });
+      });
+      const bytes = await doc.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(blob, current.name.replace(/\.pdf$/i, "") + "-watermarked.pdf");
+      status.innerHTML = `✅ Watermarked <b>${doc.getPageCount()} page(s)</b>.`;
+    }
+  </script>
+</body>
+</html>

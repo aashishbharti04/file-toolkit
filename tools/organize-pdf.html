@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organize PDF — FileToolkit</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">🧰 File<span>Toolkit</span></a>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <a href="../index.html" class="back">← All tools</a>
+    <div class="tool-head">
+      <h1>🗂️ Organize PDF</h1>
+      <p>Reorder or delete pages, then save a new PDF.</p>
+    </div>
+
+    <div id="drop" class="drop">
+      <div class="ic">📁</div>
+      <p><strong>Drag &amp; drop a PDF</strong> or click to choose</p>
+    </div>
+    <input type="file" id="file" accept="application/pdf" hidden />
+
+    <div id="panel" class="panel hidden">
+      <p id="info" class="muted" style="margin-bottom:14px;"></p>
+      <ul id="list" class="file-list"></ul>
+      <div class="row" style="margin-top:16px; justify-content:center;">
+        <button id="make" class="btn primary">💾 Save new PDF</button>
+        <button id="clear" class="btn ghost">Clear</button>
+      </div>
+      <div id="status" class="result hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot"><p>🔒 100% client-side · <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ Star on GitHub</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/common.js"></script>
+  <script>
+    let current = null, order = [];
+    const drop = document.getElementById("drop");
+    const file = document.getElementById("file");
+    const panel = document.getElementById("panel");
+    const info = document.getElementById("info");
+    const list = document.getElementById("list");
+    const status = document.getElementById("status");
+
+    document.getElementById("clear").addEventListener("click", () => { current = null; order = []; list.innerHTML = ""; panel.classList.add("hidden"); status.classList.add("hidden"); });
+    document.getElementById("make").addEventListener("click", save);
+
+    setupDrop({ drop, input: file, accept: (f) => f.type === "application/pdf",
+      onFiles: async (files) => {
+        current = files[0];
+        const { PDFDocument } = PDFLib;
+        const doc = await PDFDocument.load(await current.arrayBuffer());
+        order = doc.getPageIndices(); // [0..n-1]
+        info.textContent = `📄 ${current.name} · ${order.length} pages`;
+        panel.classList.remove("hidden");
+        render();
+      } });
+
+    function render() {
+      list.innerHTML = "";
+      order.forEach((pageIdx, pos) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<div class="nm">Page ${pageIdx + 1}</div>
+          <button class="btn" data-a="up" title="Move up">↑</button>
+          <button class="btn" data-a="down" title="Move down">↓</button>
+          <button class="rm" title="Delete">✕</button>`;
+        li.querySelector('[data-a="up"]').addEventListener("click", () => { if (pos > 0) { [order[pos-1], order[pos]] = [order[pos], order[pos-1]]; render(); } });
+        li.querySelector('[data-a="down"]').addEventListener("click", () => { if (pos < order.length-1) { [order[pos+1], order[pos]] = [order[pos], order[pos+1]]; render(); } });
+        li.querySelector(".rm").addEventListener("click", () => { order.splice(pos, 1); render(); });
+        list.appendChild(li);
+      });
+    }
+
+    async function save() {
+      if (!current || !order.length) { status.classList.remove("hidden"); status.innerHTML = "⚠️ Keep at least one page."; return; }
+      status.classList.remove("hidden"); status.innerHTML = "Saving…";
+      const { PDFDocument } = PDFLib;
+      const src = await PDFDocument.load(await current.arrayBuffer());
+      const out = await PDFDocument.create();
+      const pages = await out.copyPages(src, order);
+      pages.forEach((p) => out.addPage(p));
+      const bytes = await out.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(blob, current.name.replace(/\.pdf$/i, "") + "-organized.pdf");
+      status.innerHTML = `✅ Saved <b>${order.length} page(s)</b> in your new order.`;
+    }
+  </script>
+</body>
+</html>
