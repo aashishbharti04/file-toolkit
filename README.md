@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧰 FileToolkit
+# 🧩 Pglue
 
 ### Free PDF &amp; image tools — merge, split, compress, resize &amp; convert. 100% in your browser.
 
@@ -11,7 +11,7 @@
 
 **An open-source, iLovePDF-style toolkit that runs entirely on your device — your files are never uploaded.**
 
-![FileToolkit preview](preview.svg)
+![Pglue preview](preview.svg)
 
 🔗 **[Live Demo](https://aashishbharti04.github.io/file-toolkit/)** · ⭐ **Star it if it's useful!**
 
@@ -19,8 +19,8 @@
 
 ---
 
-## ❓ Why FileToolkit?
-Most online PDF/image tools make you **upload your private files to their servers**. FileToolkit does everything **locally in your browser** using the Canvas, File, and PDF APIs — so it's **private, instant, and works offline** (after first load).
+## ❓ Why Pglue?
+Most online PDF/image tools make you **upload your private files to their servers**. Pglue does everything **locally in your browser** using the Canvas, File, and PDF APIs — so it's **private, instant, and works offline** (after first load).
 
 ## 🧰 Tools included
 ### 📄 PDF

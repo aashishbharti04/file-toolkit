@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FileToolkit — Free PDF & Image Tools, 100% in your browser</title>
-  <meta name="description" content="Merge, split, compress & convert PDFs and images — free, fast, and 100% private. Your files never leave your device." />
+  <title>Pglue — Free PDF & Image Tools, 100% in your browser</title>
+  <meta name="description" content="Pglue — merge, split, compress & convert PDFs and images. Free, fast, and 100% private. Your files never leave your device." />
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <header class="site-header">
-    <a href="index.html" class="brand">🧰 File<span>Toolkit</span></a>
+  <header class="site-header" id="siteHeader">
+    <a href="index.html" class="brand">🧩 P<span>glue</span></a>
     <nav class="site-nav">
       <a href="#tools">Tools</a>
       <a href="https://github.com/aashishbharti04/file-toolkit" target="_blank" rel="noopener">⭐ GitHub</a>
@@ -17,68 +17,52 @@
   </header>
 
   <section class="hero">
-    <h1>Every tool you need for <span class="grad">PDFs &amp; images</span>, in one place.</h1>
-    <p>Merge, split, compress, resize &amp; convert — free, fast, and <strong>100% private</strong>.
-       Your files are processed on your device and never uploaded.</p>
-    <a href="#tools" class="btn primary big">Explore tools ↓</a>
+    <div class="hero-glow"></div>
+    <h1 class="wordmark">Pglue</h1>
+    <p class="tagline">Every tool for <span class="grad">PDFs &amp; images</span> — in one place.</p>
+    <p class="sub">Merge, split, compress, rotate, watermark &amp; convert. Free, fast, and
+      <strong>100% private</strong> — your files never leave your device.</p>
+
+    <div class="search-wrap">
+      <input id="search" class="search" type="text" placeholder="🔍  Search tools — try “merge”, “compress”, “resize”…" autocomplete="off" />
+    </div>
+    <p class="count"><span id="count">12</span> free tools · no signup · no uploads</p>
   </section>
 
   <main id="tools" class="tool-grid-wrap">
     <h2 class="grid-title">📄 PDF Tools</h2>
     <div class="tool-grid">
-      <a class="tool-card" href="tools/merge-pdf.html">
-        <div class="ic" style="--c:#e5484d">🔗</div>
-        <h3>Merge PDF</h3><p>Combine multiple PDFs into one file, in your order.</p>
-      </a>
-      <a class="tool-card" href="tools/split-pdf.html">
-        <div class="ic" style="--c:#f5a524">✂️</div>
-        <h3>Split PDF</h3><p>Extract a page range into a brand-new PDF.</p>
-      </a>
-      <a class="tool-card" href="tools/image-to-pdf.html">
-        <div class="ic" style="--c:#8e75b2">🖼️</div>
-        <h3>Image → PDF</h3><p>Turn JPG/PNG images into a single PDF document.</p>
-      </a>
-      <a class="tool-card" href="tools/pdf-to-jpg.html">
-        <div class="ic" style="--c:#3b82f6">📸</div>
-        <h3>PDF → JPG</h3><p>Convert each PDF page into a high-quality image.</p>
-      </a>
-      <a class="tool-card" href="tools/compress-pdf.html">
-        <div class="ic" style="--c:#10b981">🗜️</div>
-        <h3>Compress PDF</h3><p>Shrink PDF size by recompressing the pages.</p>
-      </a>
-      <a class="tool-card" href="tools/rotate-pdf.html">
-        <div class="ic" style="--c:#6366f1">🔄</div>
-        <h3>Rotate PDF</h3><p>Rotate all pages 90°, 180° or 270°.</p>
-      </a>
-      <a class="tool-card" href="tools/organize-pdf.html">
-        <div class="ic" style="--c:#f97316">🗂️</div>
-        <h3>Organize PDF</h3><p>Reorder or delete pages, then save.</p>
-      </a>
-      <a class="tool-card" href="tools/watermark-pdf.html">
-        <div class="ic" style="--c:#0ea5e9">💧</div>
-        <h3>Watermark</h3><p>Stamp text diagonally across every page.</p>
-      </a>
-      <a class="tool-card" href="tools/page-numbers-pdf.html">
-        <div class="ic" style="--c:#a855f7">#️⃣</div>
-        <h3>Page Numbers</h3><p>Add page numbers in your chosen position.</p>
-      </a>
+      <a class="tool-card reveal" href="tools/merge-pdf.html" data-kw="merge combine join">
+        <div class="ic" style="--c:#e5484d">🔗</div><h3>Merge PDF</h3><p>Combine multiple PDFs into one, in your order.</p></a>
+      <a class="tool-card reveal" href="tools/split-pdf.html" data-kw="split extract separate">
+        <div class="ic" style="--c:#f5a524">✂️</div><h3>Split PDF</h3><p>Extract a page range into a brand-new PDF.</p></a>
+      <a class="tool-card reveal" href="tools/compress-pdf.html" data-kw="compress shrink reduce size">
+        <div class="ic" style="--c:#10b981">🗜️</div><h3>Compress PDF</h3><p>Shrink PDF size by recompressing the pages.</p></a>
+      <a class="tool-card reveal" href="tools/rotate-pdf.html" data-kw="rotate turn orientation">
+        <div class="ic" style="--c:#6366f1">🔄</div><h3>Rotate PDF</h3><p>Rotate all pages 90°, 180° or 270°.</p></a>
+      <a class="tool-card reveal" href="tools/organize-pdf.html" data-kw="organize reorder delete pages arrange">
+        <div class="ic" style="--c:#f97316">🗂️</div><h3>Organize PDF</h3><p>Reorder or delete pages, then save.</p></a>
+      <a class="tool-card reveal" href="tools/watermark-pdf.html" data-kw="watermark stamp text">
+        <div class="ic" style="--c:#0ea5e9">💧</div><h3>Watermark</h3><p>Stamp text diagonally across every page.</p></a>
+      <a class="tool-card reveal" href="tools/page-numbers-pdf.html" data-kw="page numbers number pagination">
+        <div class="ic" style="--c:#a855f7">#️⃣</div><h3>Page Numbers</h3><p>Add page numbers in your chosen position.</p></a>
+      <a class="tool-card reveal" href="tools/image-to-pdf.html" data-kw="image jpg png to pdf convert">
+        <div class="ic" style="--c:#8e75b2">🖼️</div><h3>Image → PDF</h3><p>Turn JPG/PNG images into a single PDF.</p></a>
+      <a class="tool-card reveal" href="tools/pdf-to-jpg.html" data-kw="pdf to jpg image export extract">
+        <div class="ic" style="--c:#3b82f6">📸</div><h3>PDF → JPG</h3><p>Convert each PDF page into a high-quality image.</p></a>
     </div>
 
     <h2 class="grid-title">🖼️ Image Tools</h2>
     <div class="tool-grid">
-      <a class="tool-card" href="tools/compress-image.html">
-        <div class="ic" style="--c:#4ade80">🗜️</div>
-        <h3>Compress Image</h3><p>Shrink file size with an adjustable quality slider.</p>
-      </a>
-      <a class="tool-card" href="tools/resize-image.html">
-        <div class="ic" style="--c:#06b6d4">📐</div>
-        <h3>Resize Image</h3><p>Set an exact width — height scales automatically.</p>
-      </a>
-      <a class="tool-card" href="tools/convert-image.html">
-        <div class="ic" style="--c:#ec4899">🔄</div>
-        <h3>Convert Image</h3><p>Convert between JPG, PNG and WebP formats.</p>
-      </a>
+      <a class="tool-card reveal" href="tools/compress-image.html" data-kw="compress image shrink reduce">
+        <div class="ic" style="--c:#4ade80">🗜️</div><h3>Compress Image</h3><p>Shrink file size with an adjustable quality slider.</p></a>
+      <a class="tool-card reveal" href="tools/resize-image.html" data-kw="resize scale width dimensions">
+        <div class="ic" style="--c:#06b6d4">📐</div><h3>Resize Image</h3><p>Set an exact width — height scales automatically.</p></a>
+      <a class="tool-card reveal" href="tools/convert-image.html" data-kw="convert format jpg png webp">
+        <div class="ic" style="--c:#ec4899">🔄</div><h3>Convert Image</h3><p>Convert between JPG, PNG and WebP formats.</p></a>
     </div>
+
+    <p id="noResults" class="no-results hidden">No tools match — try another word. 🔍</p>
   </main>
 
   <footer class="site-foot">
@@ -88,5 +72,38 @@
       · made with 💙 by <a href="https://github.com/aashishbharti04" target="_blank" rel="noopener">Aashish</a>
     </p>
   </footer>
+
+  <script>
+    // ===== Live tool search =====
+    const search = document.getElementById("search");
+    const cards = [...document.querySelectorAll(".tool-card")];
+    const noResults = document.getElementById("noResults");
+    search.addEventListener("input", () => {
+      const q = search.value.trim().toLowerCase();
+      let shown = 0;
+      cards.forEach((c) => {
+        const hay = (c.textContent + " " + (c.dataset.kw || "")).toLowerCase();
+        const match = hay.includes(q);
+        c.style.display = match ? "" : "none";
+        if (match) shown++;
+      });
+      noResults.classList.toggle("hidden", shown > 0);
+      document.querySelectorAll(".grid-title").forEach((t) => {
+        const grid = t.nextElementSibling;
+        const any = [...grid.children].some((c) => c.style.display !== "none");
+        t.style.display = any ? "" : "none";
+      });
+    });
+
+    // ===== Reveal on scroll =====
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("show"); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    cards.forEach((c) => io.observe(c));
+
+    // ===== Header shadow on scroll =====
+    const header = document.getElementById("siteHeader");
+    addEventListener("scroll", () => header.classList.toggle("scrolled", scrollY > 8));
+  </script>
 </body>
 </html>

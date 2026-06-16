@@ -134,3 +134,55 @@ input[type="number"], select, input[type="text"] {
 .site-foot p + p { margin-top: 4px; }
 
 @media (max-width: 560px) { .field { min-width: 100%; } }
+
+/* ===== PGLUE BRAND + ADVANCED UX ===== */
+.site-header { transition: box-shadow 0.25s, background 0.25s; }
+.site-header.scrolled { box-shadow: 0 4px 20px rgba(20, 30, 50, 0.08); }
+
+.hero { position: relative; overflow: hidden; padding-top: 64px; }
+.hero-glow {
+  position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+  width: 620px; height: 620px; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle, rgba(142,117,178,0.28), rgba(74,222,128,0.12) 45%, transparent 70%);
+  filter: blur(20px);
+}
+.hero > * { position: relative; z-index: 1; }
+
+/* Big Pglue wordmark */
+.wordmark {
+  font-size: clamp(4rem, 16vw, 9rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 10px;
+  background: linear-gradient(100deg, #8e75b2, #4ade80, #06b6d4, #8e75b2);
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: shimmer 6s ease-in-out infinite;
+}
+@keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+.tagline { font-size: clamp(1.2rem, 3.5vw, 1.7rem); font-weight: 700; color: var(--text); }
+.sub { color: var(--muted); max-width: 580px; margin: 14px auto 0; }
+.sub strong { color: var(--text); }
+
+/* Search */
+.search-wrap { margin: 30px auto 10px; max-width: 540px; }
+.search {
+  width: 100%; padding: 16px 20px; font-size: 1.05rem; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  box-shadow: var(--shadow); transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(142,117,178,0.15); }
+.count { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+.count span { color: var(--accent); font-weight: 700; }
+
+.no-results { text-align: center; color: var(--muted); padding: 30px; font-size: 1.05rem; }
+
+/* Reveal-on-scroll for tool cards */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.show { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .wordmark { animation: none; }
+}
