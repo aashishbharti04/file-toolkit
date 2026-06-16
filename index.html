@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Compressor — shrink & convert images in your browser</title>
+  <meta name="description" content="Compress, resize, and convert images (JPG, PNG, WebP) 100% in your browser. Private, fast, free." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🗜️ Image Compressor</h1>
+    <p>Shrink, resize &amp; convert images — <strong>100% in your browser</strong>. Nothing is uploaded.</p>
+  </header>
+
+  <main class="wrap">
+    <!-- Controls -->
+    <section class="controls">
+      <label class="ctrl">
+        <span>Quality <b id="qualityLabel">80%</b></span>
+        <input type="range" id="quality" min="10" max="100" value="80" />
+      </label>
+
+      <label class="ctrl">
+        <span>Max width <b id="widthLabel">1920px</b></span>
+        <input type="range" id="maxWidth" min="320" max="4000" step="80" value="1920" />
+      </label>
+
+      <label class="ctrl">
+        <span>Output format</span>
+        <select id="format">
+          <option value="image/jpeg">JPEG (.jpg)</option>
+          <option value="image/webp">WebP (.webp)</option>
+          <option value="image/png">PNG (.png)</option>
+        </select>
+      </label>
+    </section>
+
+    <!-- Drop zone -->
+    <section id="drop" class="drop">
+      <div class="drop-inner">
+        <div class="drop-icon">📁</div>
+        <p><strong>Drag &amp; drop images here</strong></p>
+        <p class="muted">or</p>
+        <button id="pickBtn" class="btn primary">Choose images</button>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden />
+        <p class="muted small">JPG, PNG, WebP · processed locally, never uploaded</p>
+      </div>
+    </section>
+
+    <!-- Summary + actions -->
+    <section id="summaryBar" class="summary hidden">
+      <span id="summaryText"></span>
+      <button id="downloadAll" class="btn">⬇️ Download all</button>
+      <button id="clearAll" class="btn ghost">Clear</button>
+    </section>
+
+    <!-- Results -->
+    <section id="results" class="results"></section>
+  </main>
+
+  <footer class="foot">
+    <p>Free &amp; open source ·
+      <a href="https://github.com/aashishbharti04/image-compressor" target="_blank" rel="noopener">⭐ Star on GitHub</a>
+    </p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
