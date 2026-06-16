@@ -146,7 +146,8 @@ input[type="number"], select, input[type="text"] {
   background: radial-gradient(circle, rgba(142,117,178,0.28), rgba(74,222,128,0.12) 45%, transparent 70%);
   filter: blur(20px);
 }
-.hero > * { position: relative; z-index: 1; }
+/* keep the glow absolute; only lift the real content above it */
+.hero > *:not(.hero-glow) { position: relative; z-index: 1; }
 
 /* Big Pglue wordmark */
 .wordmark {
